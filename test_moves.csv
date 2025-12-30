@@ -1,0 +1,7 @@
+move,est_time,category,priority
+double_leg, 20, takedown, medium
+standup, 20, standup, high
+switch, 10, reversal, medium
+single_leg, 25, takedown, high
+snapdown, 10, takedown, high
+sprawl, 5, takedown_defense, high
