@@ -1,43 +1,44 @@
-import random as rand
+#import random as rand
 import pandas as pd
+import ipywidgets as w
+import utilities as u
 
-# GLOBALS
-# All times in minutes
-PRACT_TIME = 120
-WARMUP_TIME = 20
-COOLDOWN_TIME = 10
-WATER_BREAK = 3
-PADDING = 1
-LIVE = False
-
-
-
-# SUPPORTING FUNCTIONS
-# Read in csv of moves
-def read_file(filename):
-    data = pd.read_csv(filename)
-    print(data)
-
-# gather input on practice parameters
-def get_input():
-    print("Current Assumptions: ")
-    print(
-        f"\tPRACT_TIME = {PRACT_TIME}\n",
-        f"\tWARMUP_TIME = {WARMUP_TIME}\n",
-        f"\tCOOLDOWN_TIME = {COOLDOWN_TIME}\n",
-        f"\tWATER_BREAK = {WATER_BREAK}\n",
-        f"\tPADDING = {PADDING}\n")
-    change = input("Would you like to change any of this? (Y/n)")
-    if (change== "Y" | change=="y"):
-        # for each global ask for new value, or enter to retain current value
-        print("Line 33 TODO")
-    # Else contunye with following questions
-
+# build practice internal recursive function
+def build_practice_recursor(temp_pract_time, pract_df):
+    if(temp_pract_time <= 0):
+        return pract_df
+    # else, add to practice.
 
 # Build a practice based on time alotted
 # effectively main in this file
 def build_practice():
     read_file("test_moves.csv")
-    get_input()
+    time_used = WARMUP_TIME + COOLDOWN_TIME + WATER_BREAK + LIVE
+    temp_pract_time = PRACT_TIME - time_used
+    pract_df = pd.DataFrame
+
+
+
 
 build_practice()
+
+
+# Eviter calculaer plusier fois le meme system
+# GPU Fuzzy check -> Frontier
+#wrap Dash
+
+dash = w.VBox([w.tau_slider, 
+                w.alpha_slider,
+                w.lifespan_estimation, 
+            
+                w.carbon_choice, 
+                w.country_choice,
+                w.listing_choice,
+                w.sector_choice, 
+                w.infos1, w.infos2, 
+                w.infos3, w.infos4,
+                w.outTotals])
+                
+
+#Show Dash
+w.display(dash)
