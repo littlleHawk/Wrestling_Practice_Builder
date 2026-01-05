@@ -1,7 +1,6 @@
 #import random as rand
-import pandas as pd
-import ipywidgets as w
 import utilities as u
+import widgets_utilites as wu
 
 # build practice internal recursive function
 def build_practice_recursor(temp_pract_time, pract_df):
@@ -12,7 +11,7 @@ def build_practice_recursor(temp_pract_time, pract_df):
 # Build a practice based on time alotted
 # effectively main in this file
 def build_practice():
-    read_file("test_moves.csv")
+    read_file("./test_moves.csv")
     time_used = WARMUP_TIME + COOLDOWN_TIME + WATER_BREAK + LIVE
     temp_pract_time = PRACT_TIME - time_used
     pract_df = pd.DataFrame

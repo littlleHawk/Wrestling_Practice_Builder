@@ -1,14 +1,13 @@
 
 # GLOBALS
-# All times in minutes
-PRACT_TIME = 120
-WARMUP_TIME = 20
-COOLDOWN_TIME = 10
-WATER_BREAK = 3
-LIVE = 0
 
-PADDING = 1
+# Utility globals
 SEED = 123
+global VERBOSE
+VERBOSE = True
+
+# Padding time between moves
+PADDING = 1
 
 # Read in csv of moves
-FILE_NAME = "test_moves.csv"
+FILE_NAME = "./test_moves.csv"
