@@ -1,3 +1,6 @@
+# LIBRARIES
+import pandas as pd
+
 
 # GLOBALS
 
@@ -11,3 +14,13 @@ PADDING = 1
 
 # Read in csv of moves
 FILE_NAME = "./test_moves.csv"
+
+# Supporting Utility Functions
+
+def read_moves_list():
+    df = pd.read_csv(FILE_NAME)
+    if (VERBOSE):
+        print("MOVES IN LIST")
+        print("---------------------------------------------------")
+        print(df)
+    return df
