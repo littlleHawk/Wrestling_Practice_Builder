@@ -102,6 +102,15 @@ padding = w.widgets.BoundedIntText(
     style={'description_width': 'initial'}
 )
 
+generate_button = w.Button(
+    description='Generate Practice',
+    disabled=False,
+    button_style='success', # 'success', 'info', 'warning', 'danger' or ''
+    tooltip='Click me',
+    icon='hippo' # (FontAwesome names without the `fa-` prefix)
+)
+
+
 # TODO
 # Add chained moves option
     # Radio button y/n
@@ -112,3 +121,4 @@ padding = w.widgets.BoundedIntText(
 
 #"Add practice segments, will group moves my most similar
 # and add a given amount of "teaching time" for each section"
+

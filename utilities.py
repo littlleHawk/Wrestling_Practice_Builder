@@ -20,7 +20,7 @@ FILE_NAME = "./test_moves.csv"
 def read_moves_list():
     df = pd.read_csv(FILE_NAME)
     if (VERBOSE):
-        print("MOVES IN LIST")
+        print("\nMOVES IN LIST")
         print("---------------------------------------------------")
         print(df)
     return df
