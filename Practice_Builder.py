@@ -52,6 +52,18 @@ class practice:
                 self.not_meat_potatatoes_time()-
                 self.moves_included["est_time"].sum()-
                 self.padding_total())
+    
+    def display_practice_timeline(self, set_length = 10):
+        for i in range(len(self.moves_included)):
+            move = self.moves_included.iloc[i]
+            reps = move["Repetitions"]
+            rep_counter = 0
+            for rep in range(reps):
+                if (rep % set_length == 0) and rep != 0:
+                    print(f"{move['Move_Name']}: {set_length} reps")
+                    print(f"Padding/Transition time: {w.padding.value} minutes")
+                rep_counter += 1
+            print("=========================================")
 
 
 
@@ -150,16 +162,29 @@ def build_practice(verbose = False):
                                 "Repetitions": repetitions,
                                 "Linked": False}])], ignore_index=True
                                 )
+                # add padding time based on number of reps, with 1 padding unit per 10 reps
+                practice_obj.padding = w.padding.value * (repetitions/10) 
             else:
                 if verbose:
                     print(f"Time left: {practice_obj.time_left()}, not adding move: {move}")
-                return practice_obj 
+                # Format move datafame
+                practice_obj.moves_included = practice_obj.moves_included.groupby("Move_Name").agg({"est_time": "sum", "Repetitions": "sum", "Linked": lambda x: tuple(x)}).reset_index()
+                return practice_obj
 
-
-
-
-    # Return practice object
+    # Return practice object if the while loop doesn't
     return(practice_obj)
+
+def export_practice(practice_obj):
+    filename = practice_obj.title + ".txt"
+    with open(filename, 'w') as f:
+        f.write(f"{practice_obj.title} created on {practice_obj.date}: \n")
+        f.write(f"Length: {practice_obj.length}\n")
+        f.write(f"Non-Move time: {practice_obj.not_meat_potatatoes_time()}\n")
+        f.write("Moves:\n")
+        for index, row in practice_obj.moves_included.iterrows():
+            f.write(f"{row['Move_Name']}: {row['Repetitions']} reps, est time: {row['est_time']} minutes\n")
+        f.write(f"Moves use {practice_obj.moves_included['est_time'].sum() / practice_obj.length * 100} % of practice\n")
+    print(f"Practice exported to {filename}")
 
 #########################################################################################################
 # Display practice
@@ -174,8 +199,10 @@ def on_button_clicked(b):
 
     with output_window:
         pract = build_practice(verbose=False)
+        # TODO: Format this output better, maybe with HTML and CSS?
         print(f"\n{pract.title}:")
-        print(pract.moves_included)
+        pract.info()
+        pract.display_practice_timeline()
 
 # Link the button to the function
 w.generate_button.on_click(on_button_clicked)
