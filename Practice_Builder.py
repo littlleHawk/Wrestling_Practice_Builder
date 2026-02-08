@@ -4,7 +4,7 @@ import widgets_utilites as w
 import datetime
 
 # Call dataframe of moves
-moves = w.move_df
+moves_df = w.move_df
 
 # Note: #! Indicates somewhere the user could input their own values 
 # to optimize hardcode sections
@@ -44,10 +44,14 @@ class practice:
                 self.live +
                 self.water_break)
     
+    def padding_total(self):
+        return self.padding * len(self.moves_included)
+    
     def time_left(self):
         return (self.length - 
                 self.not_meat_potatatoes_time()-
-                self.moves_included["est_time"].sum())
+                self.moves_included["est_time"].sum()-
+                self.padding_total())
 
 
 
@@ -116,9 +120,9 @@ def build_practice(verbose = False):
              "water_break": w.water_break.value,
              "padding": w.padding.value}
     # Get move list
-    moves = list(w.move_choice.value)
+    moves_list = list(w.move_choice.value)
     # if no moves selected, return empty practice
-    if len(moves) == 0:
+    if len(moves_list) == 0:
         print("No moves selected, returning empty practice")
         return practice("Empty Practice", time_dict)
    
@@ -131,18 +135,21 @@ def build_practice(verbose = False):
 
     while practice_obj.time_left() > 0:
         # Get each move in list of moves selected
-        for move in moves:
+        for move in moves_list:
             # For each move, add a reasonable number of sets and reps, with padding between each set
-            est_time = moves[moves["move"] == move]["est_time"].values[0]
+            est_time = (moves_df[moves_df["move"] == move]["est_time"].values[0]) / 60 # convert to minutes
             # Until the time left is less than 0, at which point, stop adding moves and return practice object
             if practice_obj.time_left() - est_time > 0:
-                repetitions = int(practice_obj.time_left() / est_time / len(moves))
-                practice_obj.moves_included = practice_obj.moves_included.append({"Move_Name": move,
-                                                                                 "est_time": est_time,
-                                                                                 "Repetitions": repetitions,
-                                                                                 "Linked": False}, ignore_index=True)
-                # Add padding time after each move
-                practice_obj.padding += w.padding.value
+                repetitions = int(practice_obj.time_left() / est_time / len(moves_list))
+
+                practice_obj.moves_included = u.pd.concat(
+                        [practice_obj.moves_included,
+                            u.pd.DataFrame([{
+                                "Move_Name": move,
+                                "est_time": est_time * repetitions,
+                                "Repetitions": repetitions,
+                                "Linked": False}])], ignore_index=True
+                                )
             else:
                 if verbose:
                     print(f"Time left: {practice_obj.time_left()}, not adding move: {move}")
@@ -157,24 +164,20 @@ def build_practice(verbose = False):
 #########################################################################################################
 # Display practice
 
-# Create a dedicated output area
+# Create a dedicated output 
+
 output_window = w.w.Output()
 
 def on_button_clicked(b):
     # Clear previous practice before printing new one
-    w.output_window.clear_output()
-    
-    with output_window:
-        # Pull current values from widgets
-        # And run practice logic
-        pract = build_practice(verbose=True)
+    output_window.clear_output()
 
+    with output_window:
+        pract = build_practice(verbose=False)
+        print(f"\n{pract.title}:")
+        print(pract.moves_included)
 
 # Link the button to the function
 w.generate_button.on_click(on_button_clicked)
 
-
-########################
-# BUILD DASH
-########################
 

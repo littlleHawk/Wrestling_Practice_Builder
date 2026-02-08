@@ -102,12 +102,28 @@ padding = w.widgets.BoundedIntText(
     style={'description_width': 'initial'}
 )
 
+# Object creation widgets
+practice_title = w.widgets.Text(
+    value='',
+    palaceholder='Type practice title here',
+    description='Practice Title:',
+    style={'description_width': 'initial'}
+)
+
 generate_button = w.Button(
     description='Generate Practice',
     disabled=False,
     button_style='success', # 'success', 'info', 'warning', 'danger' or ''
-    tooltip='Click me',
+    tooltip='Click to generate practice',
     icon='hippo' # (FontAwesome names without the `fa-` prefix)
+)
+
+export_button = w.Button(
+    description='Export Practice',
+    disabled=False,
+    button_style='info', # 'success', 'info', 'warning', 'danger' or ''
+    tooltip='Click to export practice to text file',
+    icon='file-export'
 )
 
 
