@@ -1,0 +1,4 @@
+Other consideerations/Things to add:
+
+    Widgets:
+        add a widget that takes the moves selected and lets the user set a minimum number of repetitions

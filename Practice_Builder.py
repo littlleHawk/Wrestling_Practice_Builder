@@ -6,13 +6,10 @@ import datetime
 # Call dataframe of moves
 moves = w.move_df
 
-time_dict = {"practice_length": w.practice_time.value,
-             "warmup_time": w.warmup_time.value,
-             "cooldown_time": w.cooldown_time.value,
-             "live": w.live.value,
-             "water_break": w.water_break.value,
-             "padding": w.padding.value}
-
+# Note: #! Indicates somewhere the user could input their own values 
+# to optimize hardcode sections
+#
+#
 #########################################################################################################
 
 class practice:
@@ -37,6 +34,7 @@ class practice:
     def info(self):
         print(f"{self.title} created on {self.date}: ")
         print(f"Length: {self.length}")
+        print(f"Non-Move time: {self.warmup_time+self.cooldown_time+self.live}")
         print(f"Moves: {self.moves_included}")
 #        print(f"Moves use {self.moves_include time / self.length * 100} % of practice")
     
@@ -55,25 +53,128 @@ class practice:
 
 #########################################################################################################
 
+# Set initial warmup values
+#! Change these as you see fit for JV/Varsity Presets
+def update_presets(change):
+    level = change['new']
+    
+    if level == "JV":
+        w.practice_time.value = 120
+        w.warmup_time.value = 15
+        w.live.value = 10
+        w.intensity_slider.value = 3
+        w.cooldown_time.value = 10
+        w.live.value = 0
+        w.water_break.value = 5
+        w.padding.value = 3
+    elif level == "Varsity":
+        w.practice_time.value = 120
+        w.warmup_time.value = 20
+        w.live.value = 6
+        w.intensity_slider.value = 7
+        w.cooldown_time.value = 10
+        w.water_break.value = 2
+        w.padding.value = 2
+
+# Link the team_level widget to this function
+w.team_level.observe(update_presets, names='value')
+
+#########################################################################################################
+
 # build practice internal recursive function
-def build_practice_recursor(temp_pract_time, practice_obj):
-    if(temp_pract_time <= 0):
-        return practice_obj
-    # else, add to practice.
-    if(u.VERBOSE):
-        print(practice_obj.info())
-        print("\nMoves_included: ")
-        print(practice_obj.moves_included["Move_Name"].values)
-    return
+# def build_practice_recursor(temp_pract_time, practice_obj):
+#     if(temp_pract_time <= 0):
+#         return practice_obj
+#     # else, add to practice.
+#         # Could be implemented in a binary search tree
+    
+
+#     # Print progress messages if verbose
+
+#     # Print final move list message if verbose
+#     if(u.VERBOSE):
+#         print(practice_obj.info())
+#         print("\nMoves_included: ")
+#         print(practice_obj.moves_included["Move_Name"].values)
+#     return
 
 
 # Build a practice based on time alotted
 # effectively main in this file
-def build_practice(moves = moves):
-    # Add widget for practice title
-    # initialize practice
-    practice_obj = practice("Test Practice", time_dict)
-    build_practice_recursor(10, practice_obj)
+def build_practice(verbose = False):
+    # Get practice title
+    input_title = w.practice_title.value
+    # If no title, create one with date and time
+    if input_title == "":
+        input_title = "Practice" + "_" + datetime.datetime.today().strftime("%Y-%m-%d_%H-%M")
 
-build = w.w.interactive_output(build_practice())
+    # Get current widget values
+    time_dict = {"practice_length": w.practice_time.value,
+             "warmup_time": w.warmup_time.value,
+             "cooldown_time": w.cooldown_time.value,
+             "live": w.live.value,
+             "water_break": w.water_break.value,
+             "padding": w.padding.value}
+    # Get move list
+    moves = list(w.move_choice.value)
+    # if no moves selected, return empty practice
+    if len(moves) == 0:
+        print("No moves selected, returning empty practice")
+        return practice("Empty Practice", time_dict)
+   
+    # initialize practice
+    practice_obj = practice(input_title, time_dict)
+    #build_practice_recursor(10, practice_obj)
+    # DEBUGGING PRINTS
+    if verbose:
+        print(practice_obj.info())
+
+    while practice_obj.time_left() > 0:
+        # Get each move in list of moves selected
+        for move in moves:
+            # For each move, add a reasonable number of sets and reps, with padding between each set
+            est_time = moves[moves["move"] == move]["est_time"].values[0]
+            # Until the time left is less than 0, at which point, stop adding moves and return practice object
+            if practice_obj.time_left() - est_time > 0:
+                repetitions = int(practice_obj.time_left() / est_time / len(moves))
+                practice_obj.moves_included = practice_obj.moves_included.append({"Move_Name": move,
+                                                                                 "est_time": est_time,
+                                                                                 "Repetitions": repetitions,
+                                                                                 "Linked": False}, ignore_index=True)
+                # Add padding time after each move
+                practice_obj.padding += w.padding.value
+            else:
+                if verbose:
+                    print(f"Time left: {practice_obj.time_left()}, not adding move: {move}")
+                return practice_obj 
+
+
+
+
+    # Return practice object
+    return(practice_obj)
+
+#########################################################################################################
+# Display practice
+
+# Create a dedicated output area
+output_window = w.w.Output()
+
+def on_button_clicked(b):
+    # Clear previous practice before printing new one
+    w.output_window.clear_output()
+    
+    with output_window:
+        # Pull current values from widgets
+        # And run practice logic
+        pract = build_practice(verbose=True)
+
+
+# Link the button to the function
+w.generate_button.on_click(on_button_clicked)
+
+
+########################
+# BUILD DASH
+########################
 
